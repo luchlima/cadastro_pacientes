@@ -19,19 +19,19 @@ import static org.mockito.Mockito.when;
 
 class PacienteServiceTest {
 
-    @InjectMocks
+    @InjectMocks // cria uma instancia real de pacienteService
     private PacienteService pacienteService;
 
-    @Mock
+    @Mock // cria um objeto simulado, para que possa controlar o comportamento no teste sem depender do BD real
     private PacienteRepository pacienteRepository;
 
     private Paciente paciente;
 
-    @BeforeEach
-    void setUp(){
-        MockitoAnnotations.openMocks(this);
+    @BeforeEach // --{
+    void setUp(){ //                      -> inicia os mocks antes de cada teste, para garantir que sejam isolados
+        MockitoAnnotations.openMocks(this);// --}
 
-        paciente = Paciente.builder()
+        paciente = Paciente.builder() // Cria um objeto para os testes
                 .id(1L)
                 .nome("Lucas")
                 .cpf("12345678901")
@@ -41,29 +41,28 @@ class PacienteServiceTest {
 
     @Test
     void deveBuscarPacientePorIdComSucesso(){
-        when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
+        when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));// simula e retorna o paciente
 
-        Optional<Paciente> resultado = pacienteService.buscarPorId(1L);
+        Optional<Paciente> resultado = pacienteService.buscarPorId(1L);// chama o metodo real do serviço que esta em teste
 
-        assertTrue(resultado.isPresent());
-        assertEquals("Lucas", resultado.get().getNome());
+        assertTrue(resultado.isPresent()); // verifica se o paciente está presente
+        assertEquals("Lucas", resultado.get().getNome()); // verifica se está correto
     }
     @Test
     void deveSalvarPacienteComSucesso() {
-        when(pacienteRepository.save(any())).thenReturn(paciente);
+        when(pacienteRepository.save(any())).thenReturn(paciente);//simula que qualquer paciente salvo retorna o obj paciente
 
-        Paciente salvo = pacienteService.salvar(paciente);
-
-        assertNotNull(salvo);
-        assertEquals("Lucas", salvo.getNome());
+        Paciente salvo = pacienteService.salvar(paciente); //--{
+        assertNotNull(salvo);// ---> verifica se o paciente foi salvo
+        assertEquals("Lucas", salvo.getNome());//--}
     }
 
     @Test
     void deveRetornarVazioAoBuscarIdInexistente() {
-        when(pacienteRepository.findById(99L)).thenReturn(Optional.empty());
+        when(pacienteRepository.findById(99L)).thenReturn(Optional.empty());// simula o id 99L que não existe
 
-        Optional<Paciente> resultado = pacienteService.buscarPorId(99L);
-
-        assertFalse(resultado.isPresent());
+        Optional<Paciente> resultado = pacienteService.buscarPorId(99L);//--{
+                                                    // -> verifica que o metodo retorna um optional vazio.
+        assertFalse(resultado.isPresent()); //--}
     }
 }
