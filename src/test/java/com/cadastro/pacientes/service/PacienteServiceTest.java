@@ -1,6 +1,7 @@
 package com.cadastro.pacientes.service;
 
 
+import com.cadastro.pacientes.DTO.PacienteDTO;
 import com.cadastro.pacientes.Entity.Paciente;
 import com.cadastro.pacientes.Repository.PacienteRepository;
 import com.cadastro.pacientes.Service.PacienteService;
@@ -37,6 +38,32 @@ class PacienteServiceTest {
                 .cpf("12345678901")
                 .idade(30)
                 .build();
+    }
+
+    @Test
+    void buscarCpfComSucesso(){
+        final String cpf = "12345678901";
+
+        Paciente pacienteTest = new Paciente();
+        pacienteTest.setNome("Gabriel");
+        pacienteTest.setCpf(cpf);
+
+        when(pacienteRepository.findByCpf(cpf)).thenReturn(Optional.of(paciente));
+
+        Optional<PacienteDTO> resultado = pacienteService.buscarDTOPorCpf("12345678901");
+
+        assertTrue(resultado.isPresent());
+        assertEquals("Lucas", resultado.get().getNome());
+        assertEquals(cpf, resultado.get().getCpf());
+    }
+
+    @Test
+    void dadosCpfInexistente(){
+        final String cpf = "99999999999";
+        when(pacienteRepository.findByCpf(cpf)).thenReturn(Optional.empty());
+
+        Optional<PacienteDTO> resultado = pacienteService.buscarDTOPorCpf(cpf);
+        assertTrue(resultado.isEmpty());
     }
 
     @Test
